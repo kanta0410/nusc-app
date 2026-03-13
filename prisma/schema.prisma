@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Student {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  password String    @default("nusc")
+  role     String    @default("student") // "admin" or "student"
+  absences Absence[]
+}
+
+model Activity {
+  id         String    @id @default(cuid())
+  date       String    // YYYY-MM-DD
+  time_slot  String
+  location   String
+  created_at DateTime  @default(now())
+  absences   Absence[]
+}
+
+model Absence {
+  id            String   @id @default(cuid())
+  student       Student  @relation(fields: [student_id], references: [id])
+  student_id    String
+  activity      Activity @relation(fields: [activity_id], references: [id])
+  activity_id   String
+  reason        String   // "授業", "体調不良", "その他"
+  reason_detail String?
+  created_at    DateTime @default(now())
+
+  @@unique([student_id, activity_id])
+}
