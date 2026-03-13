@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
 
   // Login
   const student = await db.getStudentByName(name);
+  console.log(`Login attempt for: ${name}, Result: ${student ? "Found" : "Not Found"}`);
+  
   if (!student || student.password !== password) {
     return NextResponse.json(
       { error: "名前またはパスワードが間違っています" },
@@ -20,5 +22,6 @@ export async function POST(req: NextRequest) {
   }
 
   setSession(student);
+  console.log(`Login successful for: ${name}`);
   return NextResponse.json({ ok: true, role: student.role, name: student.name });
 }
